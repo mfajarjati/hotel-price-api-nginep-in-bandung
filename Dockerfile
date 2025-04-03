@@ -1,17 +1,19 @@
-FROM python:3.10-slim
+FROM python:3.9-slim
 
 WORKDIR /app
 
+# Copy requirements and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Create directory for models
+RUN mkdir -p /app/models
+
+# Copy application code
 COPY . .
 
-# Create models directory and run the export script to generate a dummy model
-RUN mkdir -p models
-RUN python export_model.py
+# Expose the port
+EXPOSE 7860
 
-ENV PORT=8080
-EXPOSE 8080
-
-CMD gunicorn --bind 0.0.0.0:$PORT app:app
+# Run the application
+CMD ["gunicorn", "--bind", "0.0.0.0:7860", "app:app"]
